@@ -25,7 +25,7 @@ getgenv().Config_Dragon = {
             ["Enabled"] = true,
             ["Url"] = "5000",
             ["Ping"] = "<@>",
-            ["Delay"] = 100
+            ["Delay"] = 00.1
         },
 
         ["MaxTargetDistance"] = 90000
