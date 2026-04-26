@@ -1,0 +1,24 @@
+--Settings
+getgenv().Setting = {
+    ["Team"] = "Pirates", -- Options "Pirates", "Marines"
+    ["SkipTargetTime"] = 25,
+    ["HopTime"] = 3,
+    ["FPSBoost"] = false,
+    ["ChatAfterKill"] = {
+        ["Enabled"] = false,
+        ["MessageList"] = {
+            "gg",
+            "lol",
+            "i ues Yoru hub",
+            "im goat",
+            "Skill issue",
+            "you look like 2m",
+            "Dont cry",
+            "Nice try!!",
+            "bot?",
+            "Bye~"
+        }
+    },
+    ["DontAttackFriend"] = true,
+    ["AttackEnemy"] = true
+}
