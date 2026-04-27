@@ -1,0 +1,48 @@
+local tool = script.Parent
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+-- Load Animation tấn công
+local anim = Instance.new("Animation")
+anim.AnimationId = "rbxassetid://YOUR_ANIMATION_ID" -- Thay ID của bạn vào đây
+local loadAnim = humanoid:LoadAnimation(anim)
+
+local debounce = false
+local attackSpeed = 0.1 -- Thời gian giữa các đòn đánh (giây)
+
+tool.Activated:Connect(function()
+    if not debounce then
+        debounce = true
+        
+        -- Thực hiện đòn đánh
+        loadAnim:Play()
+        print("Đang tấn công nhanh!")
+        
+        -- Chờ hồi chiêu ngắn
+        task.wait(attackSpeed)
+        
+        debounce = false
+    end
+end)
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- Hàm để đưa nhân vật lên trời
+local function teleUp(height)
+    local character = player.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        -- Thay đổi vị trí nhân vật lên cao dựa trên vị trí hiện tại
+        character.HumanoidRootPart.CFrame = character.HumanoidRootPart.CFrame * CFrame.new(0, height, 0)
+        print("Đã bay lên trời ở độ cao: " .. height)
+    end
+end
+
+-- Ví dụ: Bay lên 500 studs khi nhấn phím "T"
+local UserInputService = game:GetService("UserInputService")
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.T then
+        teleUp(500) -- Thay đổi số này để chỉnh độ cao
+    end
+end)
