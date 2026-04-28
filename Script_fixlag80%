@@ -1,0 +1,195 @@
+--========================
+-- FIX LAG + REMOVE EFFECT + FPS
+--========================
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Lighting = game:GetService("Lighting")
+local player = Players.LocalPlayer
+
+--========================
+-- FPS COUNTER
+--========================
+local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
+ScreenGui.Name = "FPS_GUI"
+
+local fpsLabel = Instance.new("TextLabel", ScreenGui)
+fpsLabel.Size = UDim2.new(0, 120, 0, 30)
+fpsLabel.Position = UDim2.new(0, 10, 0, 10)
+fpsLabel.BackgroundTransparency = 0.3
+fpsLabel.BackgroundColor3 = Color3.fromRGB(0,0,0)
+fpsLabel.TextColor3 = Color3.fromRGB(0,255,0)
+fpsLabel.TextScaled = true
+fpsLabel.Font = Enum.Font.SourceSansBold
+fpsLabel.Text = "FPS: ..."
+
+local frames = 0
+local last = tick()
+
+RunService.RenderStepped:Connect(function()
+	frames += 1
+	if tick() - last >= 1 then
+		fpsLabel.Text = "FPS: "..frames
+		frames = 0
+		last = tick()
+	end
+end)
+
+--========================
+-- REMOVE EFFECT FUNCTION
+--========================
+local function clearEffects(obj)
+	for _,v in pairs(obj:GetDescendants()) do
+		if v:IsA("ParticleEmitter")
+		or v:IsA("Trail")
+		or v:IsA("Beam")
+		or v:IsA("Explosion")
+		or v:IsA("Fire")
+		or v:IsA("Smoke") then
+			v:Destroy()
+		end
+
+		-- Chặn animation / tween hiệu ứng
+		if v:IsA("AnimationController") or v:IsA("Animator") then
+			v:Destroy()
+		end
+	end
+end
+
+--========================
+-- APPLY TO WORKSPACE
+--========================
+clearEffects(workspace)
+
+workspace.DescendantAdded:Connect(function(v)
+	task.wait(0.05)
+	if v:IsA("ParticleEmitter")
+	or v:IsA("Trail")
+	or v:IsA("Beam")
+	or v:IsA("Explosion")
+	or v:IsA("Fire")
+	or v:IsA("Smoke") then
+		v:Destroy()
+	end
+end)
+
+--========================
+-- PLAYER EFFECT CLEAN
+--========================
+player.CharacterAdded:Connect(function(char)
+	task.wait(1)
+	clearEffects(char)
+end)
+
+if player.Character then
+	clearEffects(player.Character)
+end
+
+--========================
+-- LIGHTING SAFE (NO GRAPHIC DROP)
+--========================
+Lighting.Bloom.Enabled = false
+Lighting.SunRays.Enabled = false
+Lighting.DepthOfField.Enabled = false
+
+--========================
+-- DONE
+--========================
+print("✅ FIX LAG + REMOVE EFFECT + FPS READY")--===[ GIẢM 80% ĐỒ HỌA & TỐI ƯU GAME ]===--
+
+-- 1. Tắt hầu hết hiệu ứng, giữ lại một phần cơ bản
+for _, v in pairs(game:GetDescendants()) do
+    if v:IsA("Trail") or v:IsA("Beam") or v:IsA("Explosion") then
+        v:Destroy()
+    elseif v:IsA("ParticleEmitter") then
+        v.Enabled = false
+        v.LightEmission = 0
+        v.Rate = v.Rate * 0.2
+        v.Lifetime = NumberRange.new(0.1)
+    elseif v:IsA("Decal") or v:IsA("Texture") then
+        v.Transparency = 0.6
+    elseif v:IsA("MeshPart") or v:IsA("UnionOperation") or v:IsA("Part") then
+        if v.Name ~= "Head" and v.Name ~= "HumanoidRootPart" then
+            v.Material = Enum.Material.SmoothPlastic
+            v.CastShadow = false
+            v.Reflectance = 0
+        end
+    end
+end
+
+-- 2. Lighting nhẹ
+local Lighting = game:GetService("Lighting")
+Lighting.GlobalShadows = false
+Lighting.FogEnd = 1e10
+Lighting.Brightness = 1
+Lighting.ClockTime = 14
+Lighting.EnvironmentDiffuseScale = 0.1
+Lighting.EnvironmentSpecularScale = 0.1
+Lighting.OutdoorAmbient = Color3.fromRGB(110, 110, 110)
+
+-- 3. Tắt các hiệu ứng hình ảnh nâng cao
+for _, v in pairs(Lighting:GetChildren()) do
+	if v:IsA("BloomEffect") or v:IsA("DepthOfFieldEffect") or v:IsA("SunRaysEffect") then
+		v.Enabled = false
+	end
+end
+
+-- 4. Terrain đơn giản
+local terrain = workspace:FindFirstChildOfClass("Terrain")
+if terrain then
+	terrain.WaterWaveSize = 0.2
+	terrain.WaterWaveSpeed = 0.5
+	terrain.WaterReflectance = 0
+	terrain.WaterTransparency = 0.9
+end
+
+-- 5. Chất lượng hiển thị vừa thấp để ổn định FPS
+settings().Rendering.QualityLevel = Enum.QualityLevel.Level02
+
+--===[ HIỂN THỊ FPS GÓC TRÁI ]===--
+
+local RunService = game:GetService("RunService")
+local fpsGui = Instance.new("ScreenGui", game.CoreGui)
+fpsGui.Name = "FPS_Display_80"
+
+local fpsLabel = Instance.new("TextLabel", fpsGui)
+fpsLabel.Position = UDim2.new(0, 10, 0, 10)
+fpsLabel.Size = UDim2.new(0, 120, 0, 30)
+fpsLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+fpsLabel.BackgroundTransparency = 0.4
+fpsLabel.TextColor3 = Color3.new(1, 1, 1)
+fpsLabel.Font = Enum.Font.Code
+fpsLabel.TextSize = 18
+fpsLabel.Text = "FPS: ..."
+fpsLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+local lastTime = tick()
+local frames = 0
+
+RunService.RenderStepped:Connect(function()
+    frames += 1
+    if tick() - lastTime >= 1 then
+        fpsLabel.Text = "FPS: " .. frames
+        frames = 0
+        lastTime = tick()
+    end
+end){"FFlagDisablePostFx": "True",
+"DFFlagTextureQualityOverrideEnabled": "True",
+"DFIntTextureQualityOverride": "0",
+"FIntMaxTextureSize": "1",
+"FFlagRenderShadow": "False",
+"FFlagDebugTextureManagerSkipMips": "9999",
+"FFlagEnableTextureStreaming": "False",
+"FFlagDebugDisableTextures": "True",
+"FFlagDisableUI": "True",
+"FFlagDisableAnimations": "True",
+"FFlagDebugDisplayFPS": "True",
+"FFlagDebugForceFutureIsBrightPhase3": "True",
+"FFlagDebugSkyGray": "True",
+"FFlagDisableMaterials": "True",
+"FFlagDisableLighting": "True",
+"FFlagDisableParticles": "True",
+"FFlagGameBasicSettingsFramerateCap5": false,
+"FFlagTaskSchedulerLimitTargetFpsTo2402": "False",
+"DFIntTaskSchedulerTargetFps": 1000
+}
